@@ -6,67 +6,49 @@
  * @author Sujay Mahadik
  *
  */
-import java.util.*;
 import java.net.*;
 import java.io.*;
 
-class server {
+public class server extends Thread {
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		ServerSocket serverSocket = new ServerSocket(3456);
-		
-		while(true) {
-			Socket socket = serverSocket.accept();
-			System.out.println("Connected to: " + socket.toString());
-			
-			DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-			
-			Thread t = new handler(socket, inputStream);
-			t.start();
-		}
-	}
-
-}
-
-class handler extends Thread {
-	Socket socket = null;
-	DataInputStream inputStream = null;
+	private ServerSocket serverSocket;
 	
-	String toClient =  new String();
-	Scanner input = new Scanner(System.in);
-	
-	public handler (Socket socker, DataInputStream inputStream) {
-		this.socket = socket;
-		this.inputStream = inputStream;
+	public server() throws IOException {
+		serverSocket = new ServerSocket(1245);
+		System.out.println();
 	}
 	
 	public void run() {
-		try {
-			System.out.println("From Client: " + inputStream.readUTF());
-			
-			
-			
+		while(true) {
+			try {
+				Socket socket = serverSocket.accept();
+				DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+				String fromClient = inputStream.readUTF();
+				System.out.println("Client: " + socket.getRemoteSocketAddress() + " Echo: "+ fromClient);
+				DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+				
+				outputStream.writeUTF(fromClient);
+				
+				socket.close();
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
-		catch (Exception e){
-			
-		}
+	}
+	
+	public static void main (String[] args) {
+		System.out.println("Server Ready");
 		
 		try {
-			DataOutputStream outputStream = null;
-			System.out.print("Send: ");
-			outputStream.writeUTF(input.nextLine());
-		}
-		catch (NullPointerException ioe) {
+			
+			Thread t = new server();
+			t.run();
 			
 		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
+		catch(IOException e){
 			e.printStackTrace();
 		}
 	}
+	
 }

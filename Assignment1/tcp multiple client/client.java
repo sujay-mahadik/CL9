@@ -18,22 +18,19 @@ public class client {
 	 * @throws IOException 
 	 * @throws UnknownHostException 
 	 */
-	public static void main(String[] args) throws UnknownHostException, IOException {
-		// TODO Auto-generated method stub
-		
+	public static void main(String[] args) throws UnknownHostException, IOException {		
 		Scanner input = new Scanner(System.in);
+		Socket socket = new Socket("localhost", 1245);
 		
-		Socket socket = new Socket("localhost", 3456);
+		DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+		System.out.println("Enter String to Echo");
+		String str = input.nextLine();
+		outputStream.writeUTF(str);
 		
-		DataOutput outputStream = new DataOutputStream(socket.getOutputStream());
 		DataInput inputStream = new DataInputStream(socket.getInputStream());
+		System.out.println("Echo from Server: " + inputStream.readUTF());
 		
-		
-		System.out.print("You Say: ");
-		outputStream.writeUTF(input.nextLine());
-		
-		System.out.println("Reply: " + inputStream.readUTF());
-		
+		input.close();
 		socket.close();
 	}
 
